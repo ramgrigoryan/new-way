@@ -16,17 +16,15 @@ class Unit {
     this.body.className = "unit";
 
     this.style = this.body.style;
-
-    this.coords = [x, y];
-
     this.setCoords(x, y);
-
+    this.dir = LEFT;
     canvas.append(this.body);
   }
+
   setCoords(newX, newY) {
     this.coords = [newX, newY];
-    this.style.left = this.coords[0] + "px";
-    this.style.top = this.coords[1] + "px";
+    this.style.left = newX + "px";
+    this.style.top = newY + "px";
   }
 }
 
@@ -34,26 +32,29 @@ function randomCoors() {
   return 20 * Math.round(Math.random() * 24);
 }
 
-const target = () => {
-  let food = new Unit(randomCoors(), randomCoors());
-  food.style.backgroundColor = "#e00";
-  return food;
-};
+function setFood() {
+  let target = new Unit(randomCoors(), randomCoors());
+  target.style.backgroundColor = "#e00";
+  return target;
+}
 
-target();
+let food = setFood();
 
 class Snake {
   constructor() {
     this.head = new Unit(boxSize / 2, boxSize / 2);
-    this.player = [this.head.body];
+    this.units = [this.head];
+    this.speed = 100;
     moveBreaker = this.initialMove();
     this.playerMove();
   }
 
   initialMove = () => {
     return setInterval(() => {
+      this.head.dir = LEFT;
+      console.log(this.head.dir);
       this.moveThroughX();
-    }, 50);
+    }, this.speed);
   };
 
   moveThroughX() {
@@ -67,13 +68,13 @@ class Snake {
       }
     }
     if (this.head.coords[0] > boxSize) {
-      {
-        if (step > 0) {
-          this.head.setCoords(0, this.head.coords[1]);
-        }
+      if (step > 0) {
+        this.head.setCoords(0, this.head.coords[1]);
       }
     }
+    this.collision();
   }
+
   moveThroughY() {
     if (this.head.coords[1] > 0) {
       this.head.setCoords(this.head.coords[0], this.head.coords[1] + step);
@@ -85,12 +86,11 @@ class Snake {
       }
     }
     if (this.head.coords[1] > boxSize) {
-      {
-        if (step > 0) {
-          this.head.setCoords(this.head.coords[0], 0);
-        }
+      if (step > 0) {
+        this.head.setCoords(this.head.coords[0], 0);
       }
     }
+    this.collision();
   }
 
   playerMove() {
@@ -105,13 +105,33 @@ class Snake {
   setDirection(direction) {
     clearInterval(moveBreaker);
     moveBreaker = setInterval(() => {
+      this.head.dir = direction;
+      console.log(this.head.dir);
       step = direction === LEFT || direction === UP ? -20 : 20;
       if (direction === LEFT || direction === RIGHT) {
         this.moveThroughX();
       } else {
         this.moveThroughY();
       }
-    }, 50);
+    }, this.speed);
+  }
+
+  collision() {
+    if (
+      this.head.coords[0] === food.coords[0] &&
+      this.head.coords[1] === food.coords[1]
+    ) {
+      console.log("Mmmmm, tasty!");
+      this.advance(this.units[this.units.length - 1].dir);
+      // console.log(this.units.length);
+      food.body.parentElement.removeChild(food.body);
+      food = setFood();
+    }
+  }
+
+  advance(dir) {
+    this.units.push(new Unit());
+    this.units[this.units.length - 1].setCoords(randomCoors(), randomCoors());
   }
 }
 new Snake();
