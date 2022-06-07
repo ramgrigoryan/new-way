@@ -122,16 +122,27 @@ class Snake {
       this.head.coords[1] === food.coords[1]
     ) {
       console.log("Mmmmm, tasty!");
-      this.advance(this.units[this.units.length - 1].dir);
+      this.advance(this.units[this.units.length-1].dir);
       // console.log(this.units.length);
       food.body.parentElement.removeChild(food.body);
       food = setFood();
     }
   }
 
-  advance(dir) {
-    this.units.push(new Unit());
-    this.units[this.units.length - 1].setCoords(randomCoors(), randomCoors());
+  advance(direction) {
+    let x,y;
+    console.log(this.units[0].coords[0]);
+    if(this.units[this.units.length-1].dir==LEFT || this.units[this.units.length-1].dir==RIGHT ){
+      x= this.units[this.units.length-1].coords[0]-step;
+      y= this.units[this.units.length-1].coords[1];
+    }
+    else{
+      x=this.units[this.units.length-1].coords[0];
+      y=this.units[this.units.length-1].coords[1]-20;
+    }
+    this.units.push(new Unit(x,y));
+    this.units[this.units.length-1].dir=direction;
+    console.log(this.units[this.units.length-1].coords,this.units[this.units.length-1].direction);
   }
 }
 new Snake();
