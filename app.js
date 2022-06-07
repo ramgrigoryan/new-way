@@ -14,7 +14,6 @@ class Unit {
   constructor(x, y) {
     this.body = document.createElement("div");
     this.body.className = "unit";
-
     this.style = this.body.style;
     this.setCoords(x, y);
     this.dir = LEFT;
@@ -43,8 +42,10 @@ let food = setFood();
 class Snake {
   constructor() {
     this.head = new Unit(boxSize / 2, boxSize / 2);
+    this.head.body.style.backgroundColor = "#b2d119";
     this.units = [this.head];
     this.speed = 100;
+    this.prevUnitsCoords = [];
     moveBreaker = this.initialMove();
     this.playerMove();
   }
@@ -52,12 +53,20 @@ class Snake {
   initialMove = () => {
     return setInterval(() => {
       this.head.dir = LEFT;
-      console.log(this.head.dir);
       this.moveThroughX();
     }, this.speed);
   };
 
   moveThroughX() {
+    let nextPosition, prevPosition;
+    this.units.forEach((unit, index, array) => {
+      prevPosition = [unit.coords[0], unit.coords[1]];
+      if (index > 0) {
+        unit.setCoords(nextPosition[0], nextPosition[1])
+        unit.dir = array[index - 1].dir;
+      }
+      nextPosition = [prevPosition[0], prevPosition[1]];
+    })
     if (this.head.coords[0] > 0) {
       this.head.setCoords(this.head.coords[0] + step, this.head.coords[1]);
     } else if (this.head.coords[0] <= 0) {
@@ -76,6 +85,15 @@ class Snake {
   }
 
   moveThroughY() {
+    let nextPosition, prevPosition;
+    this.units.forEach((unit, index, array) => {
+      prevPosition = [unit.coords[0], unit.coords[1]];
+      if (index > 0) {
+        unit.setCoords(nextPosition[0], nextPosition[1])
+        unit.dir = array[index - 1].dir;
+      }
+      nextPosition = [prevPosition[0], prevPosition[1]];
+    })
     if (this.head.coords[1] > 0) {
       this.head.setCoords(this.head.coords[0], this.head.coords[1] + step);
     } else if (this.head.coords[1] <= 0) {
@@ -106,7 +124,6 @@ class Snake {
     clearInterval(moveBreaker);
     moveBreaker = setInterval(() => {
       this.head.dir = direction;
-      console.log(this.head.dir);
       step = direction === LEFT || direction === UP ? -20 : 20;
       if (direction === LEFT || direction === RIGHT) {
         this.moveThroughX();
@@ -122,27 +139,24 @@ class Snake {
       this.head.coords[1] === food.coords[1]
     ) {
       console.log("Mmmmm, tasty!");
-      this.advance(this.units[this.units.length-1].dir);
-      // console.log(this.units.length);
       food.body.parentElement.removeChild(food.body);
+      this.advance(this.units[this.units.length - 1].dir);
       food = setFood();
     }
   }
 
   advance(direction) {
-    let x,y;
-    console.log(this.units[0].coords[0]);
-    if(this.units[this.units.length-1].dir==LEFT || this.units[this.units.length-1].dir==RIGHT ){
-      x= this.units[this.units.length-1].coords[0]-step;
-      y= this.units[this.units.length-1].coords[1];
+    let x, y;
+    if (this.units[this.units.length - 1].dir == LEFT || this.units[this.units.length - 1].dir == RIGHT) {
+      x = this.units[this.units.length - 1].coords[0] - step;
+      y = this.units[this.units.length - 1].coords[1];
     }
-    else{
-      x=this.units[this.units.length-1].coords[0];
-      y=this.units[this.units.length-1].coords[1]-20;
+    else {
+      x = this.units[this.units.length - 1].coords[0];
+      y = this.units[this.units.length - 1].coords[1] - step;
     }
-    this.units.push(new Unit(x,y));
-    this.units[this.units.length-1].dir=direction;
-    console.log(this.units[this.units.length-1].coords,this.units[this.units.length-1].direction);
+    this.units.push(new Unit(x, y));
+    this.units[this.units.length - 1].dir = direction;
   }
 }
 new Snake();
