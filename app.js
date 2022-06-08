@@ -64,7 +64,7 @@ class Snake {
     }, this.speed);
   };
 
-  moveThroughX() {
+  move(){
     let nextPosition, prevPosition;
     this.units.forEach((unit, index, array) => {
       prevPosition = [unit.coords[0], unit.coords[1]];
@@ -74,6 +74,10 @@ class Snake {
       }
       nextPosition = [prevPosition[0], prevPosition[1]];
     })
+  }
+
+  moveThroughX() {
+    this.move();
     if (this.head.coords[0] > 0) {
       this.head.setCoords(this.head.coords[0] + step, this.head.coords[1]);
     } else if (this.head.coords[0] <= 0) {
@@ -92,15 +96,7 @@ class Snake {
   }
 
   moveThroughY() {
-    let nextPosition, prevPosition;
-    this.units.forEach((unit, index, array) => {
-      prevPosition = [unit.coords[0], unit.coords[1]];
-      if (index > 0) {
-        unit.setCoords(nextPosition[0], nextPosition[1])
-        unit.dir = array[index - 1].dir;
-      }
-      nextPosition = [prevPosition[0], prevPosition[1]];
-    })
+    this.move();
     if (this.head.coords[1] > 0) {
       this.head.setCoords(this.head.coords[0], this.head.coords[1] + step);
     } else if (this.head.coords[1] <= 0) {
