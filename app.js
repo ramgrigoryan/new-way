@@ -10,6 +10,12 @@ const boxSize = 480;
 
 let moveBreaker;
 
+const score = document.createElement("h1");
+score.record = 0;
+score.textContent = "Score: " + score.record;
+canvas.append(score);
+
+
 class Unit {
   constructor(x, y) {
     this.body = document.createElement("div");
@@ -44,8 +50,9 @@ class Snake {
     this.head = new Unit(boxSize / 2, boxSize / 2);
     this.head.body.style.backgroundColor = "#b2d119";
     this.units = [this.head];
+    this.length = 1;
     this.speed = 100;
-    this.prevUnitsCoords = [];
+    this.break = false;
     moveBreaker = this.initialMove();
     this.playerMove();
   }
@@ -81,7 +88,7 @@ class Snake {
         this.head.setCoords(0, this.head.coords[1]);
       }
     }
-    this.collision();
+    this.scoreUpdate(this.speed, this.collision());
   }
 
   moveThroughY() {
@@ -108,7 +115,7 @@ class Snake {
         this.head.setCoords(this.head.coords[0], 0);
       }
     }
-    this.collision();
+    this.scoreUpdate(this.speed, this.collision());
   }
 
   playerMove() {
@@ -138,10 +145,12 @@ class Snake {
       this.head.coords[0] === food.coords[0] &&
       this.head.coords[1] === food.coords[1]
     ) {
-      console.log("Mmmmm, tasty!");
+      this.length++;
+      this.speedUpdate();
       food.body.parentElement.removeChild(food.body);
       this.advance(this.units[this.units.length - 1].dir);
       food = setFood();
+      return 50;
     }
   }
 
@@ -157,6 +166,18 @@ class Snake {
     }
     this.units.push(new Unit(x, y));
     this.units[this.units.length - 1].dir = direction;
+  }
+  scoreUpdate(speed, food) {
+    score.record += Math.trunc(100 / speed);
+    if (food) {
+      score.record += food;
+    }
+    score.textContent = "Score: " + score.record;
+  }
+  speedUpdate() {
+    if (this.length % 8 == 0) {
+      this.speed /= 1.2;
+    }
   }
 }
 new Snake();
