@@ -172,7 +172,7 @@ class Snake {
   }
   speedUpdate() {
     if (this.length % 8 == 0) {
-      this.speed /= 1.2;
+      this.speed /= 1.15;
     }
   }
 }
