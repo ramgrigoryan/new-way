@@ -21,3 +21,12 @@ html,body{
     background-color: rgb(55, 138, 90);
     display: inline-block;
 }
+h1{
+    color: #fff;
+    margin: 0;
+    padding: 0;
+    display: inline-block;
+    position: absolute;
+    left: 45%;
+    top:-8%;
+}
